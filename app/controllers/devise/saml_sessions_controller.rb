@@ -10,6 +10,8 @@ class Devise::SamlSessionsController < Devise::SessionsController
     skip_before_action :verify_authenticity_token, raise: false
     prepend_before_action :store_info_for_sp_initiated_logout, only: :destroy
   end
+  
+  after_filter :store_winning_strategy, only: :create
 
   def new
     idp_entity_id = get_idp_entity_id(params)
@@ -87,5 +89,11 @@ class Devise::SamlSessionsController < Devise::SessionsController
     end
 
     OneLogin::RubySaml::SloLogoutresponse.new.create(saml_config, logout_request_id, nil, params)
+  end
+
+  private
+
+  def store_winning_strategy
+    warden.session(:user)[:strategy] = warden.winning_strategies[:user].class.name.demodulize.underscore.to_sym
   end
 end
