@@ -11,7 +11,7 @@ class Devise::SamlSessionsController < Devise::SessionsController
     prepend_before_action :store_info_for_sp_initiated_logout, only: :destroy
   end
   
-  after_filter :store_winning_strategy, only: :create
+  after_action :store_winning_strategy, only: :create
 
   def new
     idp_entity_id = get_idp_entity_id(params)
